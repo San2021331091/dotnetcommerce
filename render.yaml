@@ -4,4 +4,4 @@ services:
     env: docker
     plan: free
     dockerfilePath: Dockerfile
-    startCommand: "dotnet asp-backend.dll"
+   
