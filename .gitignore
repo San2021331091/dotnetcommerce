@@ -1,0 +1,39 @@
+# .NET build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio temporary files
+.vscode/
+
+
+# Logs
+*.log
+
+# Publish outputs
+publish/
+
+# Rider IDE files
+.idea/
+
+# Resharper files
+_ReSharper*/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+.nuget/
+
+# Mac system files
+.DS_Store
+
+# Windows thumbnail cache files
+Thumbs.db
+
+# VS Code settings folder
+.vscode/
