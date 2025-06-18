@@ -1,9 +1,7 @@
 services:
   - type: web
-    name: aspnet9-api
+    name: dotnetcommerce
     env: docker
     plan: free
-    dockerfilePath: ./Dockerfile
-    envVars:
-      - key: PORT
-        value: 8080
+    dockerfilePath: Dockerfile
+    startCommand: "dotnet asp-backend.dll"
