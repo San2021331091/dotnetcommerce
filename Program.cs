@@ -4,11 +4,26 @@ using DotNetEnv;
 Env.Load(); // Load .env variables
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ✅ Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
+
+// ✅ Enable CORS middleware
+app.UseCors("AllowAll");
 
 app.MapGet("/", () => "Your server is running");
 
-// Build connection string from environment variables
+// ✅ Connection string
 string connectionString = $"Host={Environment.GetEnvironmentVariable("DB_HOST")};" +
                           $"Username={Environment.GetEnvironmentVariable("DB_USER")};" +
                           $"Password={Environment.GetEnvironmentVariable("DB_PASS")};" +
@@ -16,6 +31,7 @@ string connectionString = $"Host={Environment.GetEnvironmentVariable("DB_HOST")}
                           $"SslMode={Environment.GetEnvironmentVariable("DB_SSLMODE")};" +
                           $"Trust Server Certificate={Environment.GetEnvironmentVariable("DB_TRUST_CERT")};";
 
+// ✅ GET: All orders
 app.MapGet("/orders", async () =>
 {
     var orders = new List<Order>();
@@ -34,20 +50,21 @@ app.MapGet("/orders", async () =>
     while (await reader.ReadAsync())
     {
         orders.Add(new Order(
-            reader.GetInt32(0),                // id
-            reader.GetString(1),               // user_uid
-            reader.GetInt32(2),                // product_id
-            reader.GetString(3),               // img_url
-            reader.GetInt32(4),                // quantity
-            reader.GetDecimal(5),              // price
-            reader.GetFieldValue<DateTimeOffset>(6), // ordered_at (timestamp with time zone)
-            reader.IsDBNull(7) ? "pending" : reader.GetString(7)  // status (handle possible NULL)
+            reader.GetInt32(0),
+            reader.GetString(1),
+            reader.GetInt32(2),
+            reader.GetString(3),
+            reader.GetInt32(4),
+            reader.GetDecimal(5),
+            reader.GetFieldValue<DateTimeOffset>(6),
+            reader.IsDBNull(7) ? "pending" : reader.GetString(7)
         ));
     }
 
     return Results.Ok(orders);
 });
 
+// ✅ GET: Orders by userUid
 app.MapGet("/orders/{userUid}", async (string userUid) =>
 {
     var orders = new List<Order>();
@@ -68,20 +85,19 @@ app.MapGet("/orders/{userUid}", async (string userUid) =>
     while (await reader.ReadAsync())
     {
         orders.Add(new Order(
-            reader.GetInt32(0),                // id
-            reader.GetString(1),               // user_uid
-            reader.GetInt32(2),                // product_id
-            reader.GetString(3),               // img_url
-            reader.GetInt32(4),                // quantity
-            reader.GetDecimal(5),              // price
-            reader.GetFieldValue<DateTimeOffset>(6), // ordered_at
+            reader.GetInt32(0),
+            reader.GetString(1),
+            reader.GetInt32(2),
+            reader.GetString(3),
+            reader.GetInt32(4),
+            reader.GetDecimal(5),
+            reader.GetFieldValue<DateTimeOffset>(6),
             reader.IsDBNull(7) ? "pending" : reader.GetString(7)
         ));
     }
 
     return Results.Ok(orders);
 });
-
 
 app.Run();
 
